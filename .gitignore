@@ -1,0 +1,17 @@
+# Ignore compiled Go binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+automation-engine
+
+# Ignore local database cache files and folder data mounts
+*.db
+*.db-journal
+database/
+downloads/
+logs/
+
+# Ignore local environment override configurations
+.env
