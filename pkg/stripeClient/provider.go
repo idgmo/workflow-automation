@@ -39,9 +39,11 @@ func (c *Client) ExecuteCharge(ctx context.Context, charge ChargeRequest) (strin
 	formData.Set("amount", fmt.Sprintf("%d", charge.AmountCents))
 	formData.Set("currency", strings.ToLower(charge.Currency))
 	formData.Set("description", charge.Description)
-	formData.Set("receipt_email", charge.CustomerEmail)
+	// formData.Set("receipt_email", charge.CustomerEmail)
 
-	endpoint := "https://stripe.com"
+	formData.Set("source", "tok_visa")
+
+	endpoint := "https://api.stripe.com/v1/charges"
 
 	// Self-healing retry settings: 2s -> 4s -> 8s -> 16s...
 	baseDelay := 2 * time.Second
@@ -54,8 +56,14 @@ func (c *Client) ExecuteCharge(ctx context.Context, charge ChargeRequest) (strin
 			return "", fmt.Errorf("failed to generate http request: %w", err)
 		}
 
+		// Formatting Cleanup
+		c.SecretKey = strings.TrimSpace(c.SecretKey)
+		c.SecretKey = strings.Trim(c.SecretKey, "\"")
+		c.SecretKey = strings.Trim(c.SecretKey, "'")
+
 		// Set essential authorization headers
-		req.Header.Set("Authorization", "Bearer "+c.SecretKey)
+		// req.Header.Set("Authorization", "Bearer "+c.SecretKey)
+		req.SetBasicAuth(c.SecretKey, "")
 		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 		resp, err := c.HTTPClient.Do(req)

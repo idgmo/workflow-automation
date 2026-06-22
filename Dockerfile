@@ -1,7 +1,7 @@
 # ==========================================
 # PHASE 1: Compile the Go Project Modules
 # ==========================================
-FROM golang:1.22-alpine AS builder
+FROM golang:1.26-alpine AS builder
 
 # Install build dependencies for C-Go libraries (Required if using raw sqlite3)
 RUN apk add --no-cache gcc musl-dev

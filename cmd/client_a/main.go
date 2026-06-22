@@ -23,12 +23,13 @@ func main() {
 	stripeGateway := stripeClient.NewClient(stripeSecret)
 
 	// Simulated incoming malformed message missing critical unit location parameters
-	mockCorruptedEmail := "Hello, someone left an invoice statement on my desk. Charge the client card $50."
+	// mockCorruptedEmail := "Hello, someone left an invoice statement on my desk. Charge the client card $50."
+	mockCorrectEmail := "Hello, I have finished the plumbing issue in Apt 4B. Please charge $50 when available."
 
 	log.Printf("[%s] Incoming task received. Processing data stack...", clientName)
 
 	// 1. Process Phase
-	parsedData, err := emailParser.ParseEmailBody(mockCorruptedEmail)
+	parsedData, err := emailParser.ParseEmailBody(mockCorrectEmail)
 	if err != nil {
 		// Log internally and fire out an alert to your phone via the notifier package
 		log.Printf("[CRITICAL] Internal text parse failed: %v", err)
