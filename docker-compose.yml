@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  # =======================================================
+  # SIMULATED CLIENT 1: Alpine Property Management
+  # =======================================================
+  alpine_rental_pipeline:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mock_client_alpine_prod
+    restart: always
+    networks:
+      - alpine_isolated_net
+    volumes:
+      - /var/lib/automation_data/client_alpine:/root/database
+    environment:
+      - STRIPE_SECRET_KEY=sk_test_51NxAlpineMockKey123456789
+      - DISCORD_WEBHOOK_URL=https://discord.com
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+  # =======================================================
+  # SIMULATED CLIENT 2: Apex Commercial Distributors
+  # =======================================================
+  apex_wholesale_pipeline:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mock_client_apex_prod
+    restart: always
+    networks:
+      - apex_isolated_net
+    volumes:
+      - /var/lib/automation_data/client_apex:/root/database
+    environment:
+      - STRIPE_SECRET_KEY=sk_test_key
+      - DISCORD_WEBHOOK_URL=https://discord.com
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+networks:
+  alpine_isolated_net:
+    driver: bridge
+  apex_isolated_net:
+    driver: bridge
