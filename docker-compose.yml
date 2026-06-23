@@ -15,8 +15,8 @@ services:
     volumes:
       - /var/lib/automation_data/client_alpine:/root/database
     environment:
-      - STRIPE_SECRET_KEY=sk_test_51TkdCZBG28IMaYJ19B2J54SGor6Wr8tl1L7O2RV22BOfPKS9gJEyzgAwrok64jawNsgWh4i2VE4AO64UhPojXVvc00BdBxh7gS
-      - DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/1518495286572613724/pUsBHrLtTPusg008X3ePI8IwF4kBPWXFBWO8qWdpywnVefCkJx0htUCGOYbjedMu0__n
+      - STRIPE_SECRET_KEY=${ALPINE_STRIPE_SECRET_KEY}
+      - DISCORD_WEBHOOK_URL=${ALPINE_DISCORD_WEBHOOK_URL}
     logging:
       driver: "json-file"
       options:
@@ -37,8 +37,8 @@ services:
     volumes:
       - /var/lib/automation_data/client_apex:/root/database
     environment:
-      - STRIPE_SECRET_KEY=sk_test_51TkdCZBG28IMaYJ19B2J54SGor6Wr8tl1L7O2RV22BOfPKS9gJEyzgAwrok64jawNsgWh4i2VE4AO64UhPojXVvc00BdBxh7gS
-      - DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/1518495286572613724/pUsBHrLtTPusg008X3ePI8IwF4kBPWXFBWO8qWdpywnVefCkJx0htUCGOYbjedMu0__n
+      - STRIPE_SECRET_KEY=${APEX_STRIPE_SECRET_KEY}
+      - DISCORD_WEBHOOK_URL=${APEX_DISCORD_WEBHOOK_URL}
     logging:
       driver: "json-file"
       options:
