@@ -17,6 +17,7 @@ services:
     environment:
       - STRIPE_SECRET_KEY=${ALPINE_STRIPE_SECRET_KEY}
       - DISCORD_WEBHOOK_URL=${ALPINE_DISCORD_WEBHOOK_URL}
+      - CLIENT_NAME=ALPINE PROPERTY MANAGEMENT
     logging:
       driver: "json-file"
       options:
@@ -39,6 +40,7 @@ services:
     environment:
       - STRIPE_SECRET_KEY=${APEX_STRIPE_SECRET_KEY}
       - DISCORD_WEBHOOK_URL=${APEX_DISCORD_WEBHOOK_URL}
+      - CLIENT_NAME=APEX COMMERCIAL DISTRIBUTORS
     logging:
       driver: "json-file"
       options:

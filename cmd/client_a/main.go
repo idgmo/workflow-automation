@@ -9,6 +9,7 @@ import (
 	"workflowAutomation/pkg/emailParser"
 	"workflowAutomation/pkg/notifier"
 	"workflowAutomation/pkg/stripeClient"
+	
 )
 
 func executeTransactionWithTimeout(stripeGateway *stripeClient.Client, payload stripeClient.ChargeRequest) error {
@@ -34,9 +35,9 @@ func executeTransactionWithTimeout(stripeGateway *stripeClient.Client, payload s
 
 func main() {
 	ctx := context.Background()
-	clientName := "Alpine Properties LLC"
 
 	// Gather pipeline configurations from safe server environment strings
+	clientName := os.Getenv("CLIENT_NAME")
 	discordURL := os.Getenv("DISCORD_WEBHOOK_URL")
 	stripeSecret := os.Getenv("STRIPE_SECRET_KEY")
 
@@ -44,6 +45,8 @@ func main() {
 	alertEngine := notifier.NewClient(discordURL)
 	stripeGateway := stripeClient.NewClient(stripeSecret)
 
+
+log.Printf("[%s] Database initialized. ", clientName)
 	// Simulated incoming malformed message missing critical unit location parameters
 	// mockCorruptedEmail := "Hello, someone left an invoice statement on my desk. Charge the client card $50."
 	mockCorrectEmail := "Hello, I have finished the plumbing issue in Apt 4B. Please charge $50 when available."
