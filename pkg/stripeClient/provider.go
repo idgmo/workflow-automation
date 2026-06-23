@@ -4,8 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -28,7 +30,7 @@ type Client struct {
 func NewClient(secretKey string) *Client {
 	return &Client{
 		SecretKey:  secretKey,
-		HTTPClient: &http.Client{Timeout: 10 * time.Second},
+		HTTPClient: &http.Client{Timeout: 15 * time.Second},
 	}
 }
 
@@ -65,6 +67,7 @@ func (c *Client) ExecuteCharge(ctx context.Context, charge ChargeRequest) (strin
 		// req.Header.Set("Authorization", "Bearer "+c.SecretKey)
 		req.SetBasicAuth(c.SecretKey, "")
 		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+		req.Header.Set("Content-Length", fmt.Sprintf("%d", len(formData.Encode())))
 
 		resp, err := c.HTTPClient.Do(req)
 		if err != nil {
@@ -74,6 +77,28 @@ func (c *Client) ExecuteCharge(ctx context.Context, charge ChargeRequest) (strin
 			}
 			c.waitBackoff(attempt, baseDelay, maxDelay)
 			continue
+		}
+
+		// Intercept Rate-Limiting/Throttling events specifically
+		if resp.StatusCode == http.StatusTooManyRequests { // HTTP 429
+			waitTime := baseDelay * 4 // Default fallback pause length
+
+			// Respect the server's explicit layout if they tell us exactly how long to wait
+			if retryAfter := resp.Header.Get("Retry-After"); retryAfter != "" {
+				if seconds, parseErr := strconv.Atoi(retryAfter); parseErr == nil {
+					waitTime = time.Duration(seconds) * time.Second
+				}
+			}
+
+			resp.Body.Close()
+			log.Printf("[RATE LIMIT 429] Exceeded API thresholds. Throttling execution. Sleeping for %v...", waitTime)
+
+			select {
+			case <-ctx.Done():
+				return "", ctx.Err()
+			case <-time.After(waitTime):
+				continue // Retry the exact same request loop cleanly
+			}
 		}
 
 		// Parse the API JSON response safely

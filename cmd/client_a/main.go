@@ -2,13 +2,35 @@ package main
 
 import (
 	"context"
+	"errors"
 	"log"
 	"os"
-
+	"time"
 	"workflowAutomation/pkg/emailParser"
 	"workflowAutomation/pkg/notifier"
 	"workflowAutomation/pkg/stripeClient"
 )
+
+func executeTransactionWithTimeout(stripeGateway *stripeClient.Client, payload stripeClient.ChargeRequest) error {
+	// Create an isolated context that self-destructs after precisely 15 seconds
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel() // Releases internal timer resources immediately once execution finishes
+
+	// Pass this timeout context directly down into your network package block
+	txID, err := stripeGateway.ExecuteCharge(ctx, payload)
+	if err != nil {
+		if errors.Is(ctx.Err(), context.DeadlineExceeded) {
+			log.Println("[CRITICAL TIMEOUT] Network dropped out permanently. Operation canceled safely.")
+			// Trigger a notification alert to your phone here!
+			return err
+		}
+		log.Printf("[PIPELINE ERROR] Operational fault: %v\n", err)
+		return err
+	}
+
+	log.Printf("[SUCCESS] Transaction processed: %s\n", txID)
+	return nil
+}
 
 func main() {
 	ctx := context.Background()
@@ -55,7 +77,7 @@ func main() {
 		Description:   "Automated rental processing fee",
 	}
 
-	_, err = stripeGateway.ExecuteCharge(ctx, payload)
+	err = executeTransactionWithTimeout(stripeGateway, payload)
 	if err != nil {
 		log.Printf("[CRITICAL] Financial gateway rejected payload: %v", err)
 		_ = alertEngine.SendAlert(ctx, clientName, "Stripe transmission failure: "+err.Error())
