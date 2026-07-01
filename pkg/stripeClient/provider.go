@@ -20,13 +20,13 @@ type ChargeRequest struct {
 	Description   string
 }
 
-// Client acts as the reusable object engine for managing Stripe API traffic
+// Client acts as a reusable object for managing Stripe API traffic
 type Client struct {
 	SecretKey  string
 	HTTPClient *http.Client
 }
 
-// NewClient instantiates the package with secure keys and a default 10-second request timeout
+// NewClient instantiates the package with secure keys and a default 15-second request timeout
 func NewClient(secretKey string) *Client {
 	return &Client{
 		SecretKey:  secretKey,
@@ -34,7 +34,7 @@ func NewClient(secretKey string) *Client {
 	}
 }
 
-// ExecuteCharge Pushes the transaction payload to Stripe, featuring an automated self-healing retry loop
+// ExecuteCharge Pushes the transaction payload to Stripe with an automated self-healing retry loop
 func (c *Client) ExecuteCharge(ctx context.Context, charge ChargeRequest) (string, error) {
 	// Stripe expects parameters in x-www-form-urlencoded format
 	formData := url.Values{}
@@ -104,17 +104,17 @@ func (c *Client) ExecuteCharge(ctx context.Context, charge ChargeRequest) (strin
 		// Parse the API JSON response safely
 		var responseBody map[string]interface{}
 		err = json.NewDecoder(resp.Body).Decode(&responseBody)
-		resp.Body.Close() // Immediately close stream to prevent severe memory leaks
+		resp.Body.Close() // Immediately close stream to prevent any memory leaks
 
 		if resp.StatusCode == http.StatusOK || resp.StatusCode == http.StatusCreated {
-			// Transaction completely successful! Extract the unique transaction ID
+			// Transaction completed successfully. Extract the unique transaction ID.
 			if id, ok := responseBody["id"].(string); ok {
 				return id, nil
 			}
 			return "SUCCESS_NO_ID", nil
 		}
 
-		// Handle explicit API Denials/Errors from Stripe (e.g., card declined, invalid key)
+		// Handle explicit API Errors from Stripe (e.g., card declined, invalid key)
 		if resp.StatusCode >= 400 && resp.StatusCode < 500 {
 			if apiErr, ok := responseBody["error"].(map[string]interface{}); ok {
 				return "", fmt.Errorf("stripe api rejected request (Status %d): %v", resp.StatusCode, apiErr["message"])
@@ -132,7 +132,7 @@ func (c *Client) ExecuteCharge(ctx context.Context, charge ChargeRequest) (strin
 	return "", fmt.Errorf("transaction failed to complete within the maximum execution limit")
 }
 
-// waitBackoff calculates and executes the pause duration using an exponential math shift
+// waitBackoff calculates and executes the pause duration using exponential shifts
 func (c *Client) waitBackoff(attempt int, base, max time.Duration) {
 	delay := base * (1 << uint(attempt-1))
 	if delay > max {

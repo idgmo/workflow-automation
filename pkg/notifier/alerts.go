@@ -9,12 +9,12 @@ import (
 	"time"
 )
 
-// DiscordPayload defines the strict structural JSON body required by Discord's webhook API
+// DiscordPayload defines the required API JSON body structure
 type DiscordPayload struct {
 	Content string `json:"content"`
 }
 
-// Client manages the transmission engine for your outward alert channels
+// Client manages transmission for outward alert channels - discord, text, etc.
 type Client struct {
 	WebhookURL string
 	HTTPClient *http.Client
@@ -28,13 +28,13 @@ func NewClient(webhookURL string) *Client {
 	}
 }
 
-// SendAlert fires a high-visibility text notification directly to your phone's Discord app
+// SendAlert fires a high-visibility text notification directly to a device - here it is the Discord app
 func (c *Client) SendAlert(ctx context.Context, clientName, errorMessage string) error {
 	if c.WebhookURL == "" {
 		return fmt.Errorf("notifier webhook url is empty; alert dropped")
 	}
 
-	// Format a scannable message block for your mobile screen
+	// Format a scannable message block for a mobile screen
 	formattedText := fmt.Sprintf(
 		"🚨 [B2B ALARM - %s]\n**Client:** %s\n**Error:** %s\n**Timestamp:** %s",
 		time.Now().Format("15:04:05 MST"),

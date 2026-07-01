@@ -33,7 +33,7 @@ func ExecuteLegacyExport(loginURL, user, pass, targetDownloadSelector string) (s
 		return "", fmt.Errorf("navigation failed: %w", err)
 	}
 
-	// Perform human action simulations: Enter security credentials and submit
+	// Perform manual login: Enter security credentials and submit
 	if err = page.Locator("#username").Fill(user); err != nil {
 		return "", err
 	}

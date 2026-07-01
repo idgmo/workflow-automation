@@ -24,7 +24,7 @@ var (
 // ParseEmailBody processes raw email text and maps it into a structured WorkOrder entity
 func ParseEmailBody(body string) (WorkOrder, error) {
 	if strings.TrimSpace(body) == "" {
-		return WorkOrder{}, errors.New("cannot parse an empty email body")
+		return WorkOrder{}, errors.New("[EMAIL PARSER] cannot parse an empty email body")
 	}
 
 	var order WorkOrder

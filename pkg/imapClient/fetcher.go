@@ -18,7 +18,7 @@ func SecureConnect(server string) (*ClientInstance, error) {
 		}
 
 		attempts++
-		log.Printf("[RETRY SYSTEM] Connection failed (Attempt %d): %v", attempts, err)
+		log.Printf("[IMAP - RETRY SYSTEM] Connection failed (Attempt %d): %v", attempts, err)
 
 		// Calculate the next delay: 2s -> 4s -> 8s -> 16s... up to 5 minutes max
 		currentDelay := baseDelay * (1 << uint(attempts))
@@ -26,7 +26,7 @@ func SecureConnect(server string) (*ClientInstance, error) {
 			currentDelay = maxDelay
 		}
 
-		log.Printf("[RETRY SYSTEM] Standing by for %v before attempting next connection...", currentDelay)
+		log.Printf("[IMAP - RETRY SYSTEM] Standing by for %v before attempting next connection...", currentDelay)
 		time.Sleep(currentDelay)
 	}
 }

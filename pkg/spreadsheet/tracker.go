@@ -7,7 +7,7 @@ import (
 	"github.com/xuri/excelize/v2"
 )
 
-// RowRecord represents a uniform data line parsed from an excel ledger
+// RowRecord represents a uniform data line parsed from an excel ledger example
 type RowRecord struct {
 	AccountID   string
 	ContactName string

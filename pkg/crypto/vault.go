@@ -8,7 +8,7 @@ import (
 	"io"
 )
 
-// EncryptSecret encrypts a sensitive string key token using a 32-byte master vault key passphrase
+// EncryptSecret encrypts a sensitive string key token using a 32-byte master key passphrase
 func EncryptSecret(plaintext []byte, masterKey []byte) ([]byte, error) {
 	if len(masterKey) != 32 {
 		return nil, errors.New("master security vault key must be precisely 32 bytes for AES-256 compliance")
