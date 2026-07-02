@@ -16,8 +16,9 @@ RUN go mod download
 COPY . .
 
 # Compile the specific client runner into a single standalone binary
+# CGO is not used, a lighter alternative modernc.org/sqlite is used instead
 # Change 'cmd/client_a/main.go' if the path matches a different directory setup
-RUN CGO_ENABLED=1 GO111MODULE=on GOOS=linux go build -o /automation-engine cmd/client_a/main.go
+RUN CGO_ENABLED=0 GOOS=linux go build -o /automation-engine ./cmd/client_a
 
 # ==========================================
 # PHASE 2: Secure Runtime Sandbox Environment

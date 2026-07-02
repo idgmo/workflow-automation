@@ -3,7 +3,7 @@ package localDatabase
 import (
 	"database/sql"
 	"fmt"
-	_ "github.com/mattn/go-sqlite3" // Loaded silently into the global package space
+	_ "modernc.org/sqlite" // Loaded silently into the global package space
 )
 
 type Store struct {
@@ -12,7 +12,7 @@ type Store struct {
 
 // NewStore launches or connects directly to the absolute target file layout path
 func NewStore(dbPath string) (*Store, error) {
-	db, err := sql.Open("sqlite3", dbPath)
+	db, err := sql.Open("sqlite", dbPath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open database channel: %w", err)
 	}
