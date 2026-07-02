@@ -5,11 +5,12 @@ import (
 	"errors"
 	"log"
 	"os"
+	"path/filepath"
 	"time"
+	"workflowAutomation/pkg/database"
 	"workflowAutomation/pkg/emailParser"
 	"workflowAutomation/pkg/notifier"
 	"workflowAutomation/pkg/stripeClient"
-	
 )
 
 func executeTransactionWithTimeout(stripeGateway *stripeClient.Client, payload stripeClient.ChargeRequest) error {
@@ -36,28 +37,37 @@ func executeTransactionWithTimeout(stripeGateway *stripeClient.Client, payload s
 func main() {
 	ctx := context.Background()
 
-<<<<<<< HEAD
 	// Gather pipeline configurations from server environment strings
-=======
-	// Gather pipeline configurations from safe server environment strings
 	clientName := os.Getenv("CLIENT_NAME")
->>>>>>> cd660b2eacbdcfa6ede20f5eeb44674a200dca99
 	discordURL := os.Getenv("DISCORD_WEBHOOK_URL")
 	stripeSecret := os.Getenv("STRIPE_SECRET_KEY")
+
+	// Database bindings
+	// Maps to the internal directory generated inside Dockerfile
+	dbFolder := "/root/database"
+	dbPath := filepath.Join(dbFolder, "local_ledger.db")
+
+	// Build the internal folders safely if missing
+	if err := os.MkdirAll(dbFolder, 0755); err != nil {
+		log.Fatalf("[CRITICAL INIT] Failed to create internal storage folder: %v", err)
+	}
+
+	// Initialize database module
+	store, err := database.NewStore(dbPath)
+	if err != nil {
+		log.Fatalf("[CRITICAL INIT] Database setup aborted: %v", err)
+	}
+	defer store.Close()
+
+	log.Printf("[%s] Database initialized securely at %s", clientName, dbPath)
 
 	// Instantiate blocks
 	alertEngine := notifier.NewClient(discordURL)
 	stripeGateway := stripeClient.NewClient(stripeSecret)
 
-<<<<<<< HEAD
 	// Simulated incoming malformed message missing required unit location parameters
 	// mockCorruptEmail := "Hello, someone left an invoice statement on my desk. Charge the client card $50."
-=======
 
-log.Printf("[%s] Database initialized. ", clientName)
-	// Simulated incoming malformed message missing critical unit location parameters
-	// mockCorruptedEmail := "Hello, someone left an invoice statement on my desk. Charge the client card $50."
->>>>>>> cd660b2eacbdcfa6ede20f5eeb44674a200dca99
 	mockCorrectEmail := "Hello, I have finished the plumbing issue in Apt 4B. Please charge $50 when available."
 
 	log.Printf("[%s] Incoming task received. Processing data stack...", clientName)
