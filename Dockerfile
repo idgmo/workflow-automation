@@ -1,40 +1,21 @@
 # ==========================================
-# PHASE 1: Compile the Go Project Modules
+# Secure Runtime Sandbox Environment
 # ==========================================
-FROM golang:1.26-alpine AS builder
+FROM alpine:latest
 
-# Install build dependencies for C-Go libraries (Required if using raw sqlite3)
-RUN apk add --no-cache gcc musl-dev
-
-WORKDIR /root/
-
-# Cache module layers first to speed up future container builds
-COPY go.mod go.sum ./
-RUN go mod download
-
-# Copy the entire workspace code base tree into the sandbox
-COPY . .
-
-# Compile the specific client runner into a single standalone binary
-# CGO is not used, a lighter alternative modernc.org/sqlite is used instead
-# Change 'cmd/client_a/main.go' if the path matches a different directory setup
-RUN CGO_ENABLED=0 GOOS=linux go build -o /automation-engine ./cmd/client_a
-
-# ==========================================
-# PHASE 2: Secure Runtime Sandbox Environment
-# ==========================================
-FROM alpine:latest  
-
-# Add core security certificates to allow scripts to access external HTTPS APIs safely
+# Add core security certificates to allow your scripts to access external HTTPS APIs safely
 RUN apk --no-cache add ca-certificates tzdata
 
 WORKDIR /root/
 
-# Copy only the compiled production-ready binary over from Phase 1
-COPY --from=builder /automation-engine .
+# Copy the local pre-compiled binary straight into the sandbox tracking space
+COPY ./automation-engine .
+
+# Ensure the operating system layer registers the binary as an executable file
+RUN chmod +x ./automation-engine
 
 # Initialize clean storage directories inside the container for local logs/DB caches
-RUN mkdir -p logs downloads localDatabase
+RUN mkdir -p logs downloads database
 
 # Instruct the container to execute your compiled automation engine automatically on boot
 CMD ["./automation-engine"]

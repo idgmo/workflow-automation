@@ -45,7 +45,7 @@ func main() {
 	// Database bindings
 	// Maps to the internal directory generated inside Dockerfile
 	dbFolder := "/root/database"
-	dbPath := filepath.Join(dbFolder, "local_ledger.db")
+	dbPath := filepath.Join(dbFolder, "production_cache.db")
 
 	// Build the internal folders safely if missing
 	if err := os.MkdirAll(dbFolder, 0755); err != nil {

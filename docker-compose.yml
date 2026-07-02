@@ -13,7 +13,7 @@ services:
     networks:
       - alpine_isolated_net
     volumes:
-      - /var/lib/automation_data/client_alpine:/root/localDatabase
+      - /var/lib/automation_data/client_alpine:/root/database
     environment:
       - STRIPE_SECRET_KEY=${ALPINE_STRIPE_SECRET_KEY}
       - DISCORD_WEBHOOK_URL=${ALPINE_DISCORD_WEBHOOK_URL}
@@ -36,7 +36,7 @@ services:
     networks:
       - apex_isolated_net
     volumes:
-      - /var/lib/automation_data/client_apex:/root/localDatabase
+      - /var/lib/automation_data/client_apex:/root/database
     environment:
       - STRIPE_SECRET_KEY=${APEX_STRIPE_SECRET_KEY}
       - DISCORD_WEBHOOK_URL=${APEX_DISCORD_WEBHOOK_URL}
