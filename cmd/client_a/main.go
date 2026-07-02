@@ -7,8 +7,8 @@ import (
 	"os"
 	"path/filepath"
 	"time"
-	"workflowAutomation/pkg/database"
 	"workflowAutomation/pkg/emailParser"
+	"workflowAutomation/pkg/localDatabase"
 	"workflowAutomation/pkg/notifier"
 	"workflowAutomation/pkg/stripeClient"
 )
@@ -53,7 +53,7 @@ func main() {
 	}
 
 	// Initialize database module
-	store, err := database.NewStore(dbPath)
+	store, err := localDatabase.NewStore(dbPath)
 	if err != nil {
 		log.Fatalf("[CRITICAL INIT] Database setup aborted: %v", err)
 	}

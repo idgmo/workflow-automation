@@ -33,7 +33,7 @@ WORKDIR /root/
 COPY --from=builder /automation-engine .
 
 # Initialize clean storage directories inside the container for local logs/DB caches
-RUN mkdir -p logs downloads database
+RUN mkdir -p logs downloads localDatabase
 
 # Instruct the container to execute your compiled automation engine automatically on boot
 CMD ["./automation-engine"]

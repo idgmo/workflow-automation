@@ -6,7 +6,7 @@
 *.dylib
 automation-engine
 
-# Ignore local database cache files and folder data mounts
+# Ignore local localDatabase cache files and folder data mounts
 *.db
 *.db-journal
 database/
