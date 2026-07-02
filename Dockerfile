@@ -6,7 +6,7 @@ FROM golang:1.26-alpine AS builder
 # Install build dependencies for C-Go libraries (Required if using raw sqlite3)
 RUN apk add --no-cache gcc musl-dev
 
-WORKDIR /app
+WORKDIR /root/
 
 # Cache module layers first to speed up future container builds
 COPY go.mod go.sum ./
