@@ -1,0 +1,5 @@
+.git
+database/
+downloads/
+logs/
+*.db
