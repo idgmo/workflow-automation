@@ -8,7 +8,7 @@ RUN apk add --no-cache gcc musl-dev
 
 WORKDIR /app
 
-# Cache your module layers first to speed up future container builds
+# Cache module layers first to speed up future container builds
 COPY go.mod go.sum ./
 RUN go mod download
 
@@ -16,15 +16,15 @@ RUN go mod download
 COPY . .
 
 # Compile the specific client runner into a single standalone binary
-# Change 'cmd/client_a/main.go' if your path matches a different directory setup
-RUN CGO_ENABLED=1 GOOS=linux go build -o /automation-engine cmd/client_a/main.go
+# Change 'cmd/client_a/main.go' if the path matches a different directory setup
+RUN CGO_ENABLED=1 GO111MODULE=on GOOS=linux go build -o /automation-engine cmd/client_a/main.go
 
 # ==========================================
 # PHASE 2: Secure Runtime Sandbox Environment
 # ==========================================
 FROM alpine:latest  
 
-# Add core security certificates to allow your scripts to access external HTTPS APIs safely
+# Add core security certificates to allow scripts to access external HTTPS APIs safely
 RUN apk --no-cache add ca-certificates tzdata
 
 WORKDIR /root/
